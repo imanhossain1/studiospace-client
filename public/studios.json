@@ -1,0 +1,66 @@
+
+[
+  {
+    "id": "1",
+    "title": "Professional Photography Studio",
+    "category": "Photo Studio",
+    "price": 50,
+    "rating": 4.8,
+    "location": "Dhaka, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800"
+  },
+  {
+    "id": "2",
+    "title": "Modern Podcast Recording Room",
+    "category": "Podcast Room",
+    "price": 35,
+    "rating": 4.7,
+    "location": "Chittagong, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800"
+  },
+  {
+    "id": "3",
+    "title": "Creative Music Recording Studio",
+    "category": "Music Suite",
+    "price": 60,
+    "rating": 4.9,
+    "location": "Sylhet, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1593078166030-9c9e9c7c9b8a?w=800"
+  },
+  {
+    "id": "4",
+    "title": "Professional Art Workshop",
+    "category": "Art Workshop",
+    "price": 40,
+    "rating": 4.6,
+    "location": "Dhaka, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800"
+  },
+  {
+    "id": "5",
+    "title": "Cinema Production Studio",
+    "category": "Sound Stage",
+    "price": 80,
+    "rating": 4.8,
+    "location": "Rajshahi, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800"
+  },
+  {
+    "id": "6",
+    "title": "Premium Photography Space",
+    "category": "Photo Studio",
+    "price": 55,
+    "rating": 4.5,
+    "location": "Khulna, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800"
+  },
+  {
+    "id": "7",
+    "title": "Luxury Creative Workspace",
+    "category": "Art Workshop",
+    "price": 70,
+    "rating": 4.9,
+    "location": "Cox's Bazar, Bangladesh",
+    "image": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800"
+  }
+]
