@@ -1,115 +1,88 @@
 
-import React from "react";
-import Link from "next/link";
+const steps = [
+  {
+    number: "01",
+    title: "Explore Studios",
+    description:
+      "Browse a wide range of creative studios, including photography studios, film stages, podcast lounges, music suites, and workshops.",
+    icon: "🔍",
+  },
+  {
+    number: "02",
+    title: "Choose Your Space",
+    description:
+      "Explore studio details, view photos, check available amenities, location, hourly rates, and capacity.",
+    icon: "🏢",
+  },
+  {
+    number: "03",
+    title: "Book Your Studio",
+    description:
+      "Select your preferred date and time, review the booking details, and confirm your reservation securely.",
+    icon: "📅",
+  },
+  {
+    number: "04",
+    title: "Create Something Amazing",
+    description:
+      "Visit your booked studio and bring your creative ideas to life. Enjoy a smooth and hassle-free experience.",
+    icon: "🎬",
+  },
+];
 
-function HowItWorks() {
-  const steps = [
-    {
-      id: 1,
-      number: "01",
-      icon: "🔍",
-      title: "Discover Spaces",
-      description: "Find the perfect creative studio for your next project.",
-    },
-    {
-      id: 2,
-      number: "02",
-      icon: "📅",
-      title: "Select Shoot Hours",
-      description: "Choose your preferred booking date and available time.",
-    },
-    {
-      id: 3,
-      number: "03",
-      icon: "✅",
-      title: "Book Instantly",
-      description: "Complete your booking request with just a few clicks.",
-    },
-    {
-      id: 4,
-      number: "04",
-      icon: "🎬",
-      title: "Create & Produce",
-      description: "Visit your studio and start creating amazing projects.",
-    },
-  ];
-
+const HowItWorks = () => {
   return (
-    <section className="py-16 px-4 bg-base-100">
-
-      <div className="max-w-7xl mx-auto">
+    <section
+      id="how-it-works"
+      className="py-16 md:py-20 bg-base-200 scroll-mt-20"
+    >
+      <div className="container mx-auto px-4">
 
         {/* Section Heading */}
         <div className="text-center mb-12">
-
-          <p className="text-primary font-semibold text-sm mb-2">
-            SIMPLE BOOKING PROCESS
+          <p className="text-primary font-semibold mb-2">
+            SIMPLE PROCESS
           </p>
 
           <h2 className="text-3xl md:text-4xl font-bold">
-            How Booking Works
+            How It Works
           </h2>
 
-          <p className="text-gray-500 mt-3 max-w-2xl mx-auto">
-            Booking your perfect creative workspace is simple.
-            Follow these four easy steps.
+          <p className="mt-4 text-base-content/70 max-w-2xl mx-auto">
+            Find your perfect creative space in four simple steps.
+            Explore, choose, book, and create something amazing.
           </p>
-
         </div>
 
-        {/* Booking Steps */}
+        {/* Steps Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
           {steps.map((step) => (
-
             <div
-              key={step.id}
-              className="card bg-base-200 border border-base-300 shadow-sm hover:shadow-lg transition-all duration-300"
+              key={step.number}
+              className="bg-base-100 p-6 rounded-xl shadow-sm border border-base-300 text-center hover:shadow-lg transition"
             >
-
-              <div className="card-body items-center text-center">
-
-                {/* Step Number */}
-                <span className="text-primary font-bold text-sm">
-                  STEP {step.number}
-                </span>
-
-                {/* Icon */}
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-4xl my-3">
-                  {step.icon}
-                </div>
-
-                {/* Title */}
-                <h3 className="card-title text-lg">
-                  {step.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-gray-500 text-sm leading-6">
-                  {step.description}
-                </p>
-
+              <div className="text-4xl mb-4">
+                {step.icon}
               </div>
 
+              <p className="text-primary font-bold text-lg mb-2">
+                STEP {step.number}
+              </p>
+
+              <h3 className="text-xl font-bold mb-3">
+                {step.title}
+              </h3>
+
+              <p className="text-base-content/70 text-sm leading-6">
+                {step.description}
+              </p>
             </div>
-
           ))}
-
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-10">
-
-          <Link href="/studios" className="btn btn-primary">
-            Find Your Studio
-          </Link>
-
         </div>
 
       </div>
-
     </section>
   );
-}
+};
 
 export default HowItWorks;
