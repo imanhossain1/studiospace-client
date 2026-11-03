@@ -13,7 +13,7 @@ const HomePage = () => {
        {/* <HeroSlider /> */}
       {/* <FeaturedStudios /> */}
       {/* <HowItWorks /> */}
-      <AboutUs />
+      {/* <AboutUs /> */}
       {/* <StudioCategories />  */}
       {/* <HostGuarantee/> */}
 
