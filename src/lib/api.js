@@ -2,6 +2,8 @@
 const apiStudioUrl = "http://localhost:8000/studios";
 const apiFeaturedStudioUrl = "http://localhost:8000/studios/featured";
 const apiCategoryUrl = "http://localhost:8000/categories";
+const apiBookingUrl = "http://localhost:8000/bookings";
+
 
 
 // 1. Get All Studios or Category Wise Studios
@@ -95,6 +97,58 @@ export async function deleteStudio(id) {
   });
 
   const data = await res.json();
+
+  return data;
+}
+
+
+
+// 9. Create Booking
+export async function createBooking(bookingData) {
+  const res = await fetch(apiBookingUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bookingData),
+  });
+
+  const data = await res.json();
+  console.log("booking save data check res.ok naki ki dey", data)
+
+  if (!res.ok) {
+    throw new Error(data.message || "Booking failed");
+  }
+
+  return data;
+}
+
+// Get My Bookings
+export async function getMyBookings(email) {
+  const res = await fetch(
+    `http://localhost:8000/my-bookings?email=${encodeURIComponent(email)}`
+  );
+
+  const data = await res.json();
+
+  return data;
+}
+
+// Cancel Booking
+export async function cancelBooking(id, userEmail) {
+  const res = await fetch(`${apiBookingUrl}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ userEmail }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to cancel booking");
+  }
 
   return data;
 }

@@ -31,6 +31,7 @@ const Navbar = () => {
     { name: "Dashboard", path: "/dashboard" },
     { name: "Add New Studio", path: "/add-studio" },
     { name: "My Studio Listings", path: "/my-studios" },
+    { name: "My Listings", path: "/my-listings" },
     { name: "My Bookings", path: "/my-bookings" },
   ];
 

@@ -1,4 +1,6 @@
+
 import { getSingleStudio } from "@/lib/api";
+import BookingButton from "@/components/studios/BookingButton";
 
 const StudioDetailsPage = async ({ params }) => {
   const { id } = await params;
@@ -11,7 +13,6 @@ const StudioDetailsPage = async ({ params }) => {
 
   return (
     <div className="container mx-auto px-4 py-10">
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
         {/* Studio Image */}
@@ -57,7 +58,9 @@ const StudioDetailsPage = async ({ params }) => {
             Security Deposit: ৳ {studio.securityDeposit}
           </p>
 
-          <h3 className="font-bold mt-5">Amenities</h3>
+          <h3 className="font-bold mt-5">
+            Amenities
+          </h3>
 
           <div className="flex flex-wrap gap-2 mt-2">
             {studio.amenities?.map((amenity, index) => (
@@ -69,6 +72,9 @@ const StudioDetailsPage = async ({ params }) => {
               </span>
             ))}
           </div>
+
+          {/* Booking */}
+          <BookingButton studio={studio} />
 
         </div>
       </div>
