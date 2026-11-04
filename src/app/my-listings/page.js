@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { getMyStudios, deleteStudio } from "@/lib/api";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -20,19 +21,29 @@ export default function MyListingsPage() {
   const [deleting, setDeleting] = useState(false);
   const [selectedStudio, setSelectedStudio] = useState(null);
 
-  // 3. Get My Studios
+  // 3. Get My Studios With JWT Token
   const getMyListings = async () => {
     try {
       setLoading(true);
 
-      const result = await getMyStudios(session.user.email);
+      // Get JWT Token
+      const token = await getTokenFromClient();
+
+      if (!token) {
+        toast.error("Please login again");
+        router.push("/login");
+        return;
+      }
+
+      // Send Token to Protected API
+      const result = await getMyStudios(token);
 
       console.log("My Studios:", result);
 
       setStudios(result);
     } catch (error) {
       console.log(error);
-      toast.error("Failed to load studios");
+      toast.error(error.message || "Failed to load studios");
     } finally {
       setLoading(false);
     }
@@ -49,15 +60,27 @@ export default function MyListingsPage() {
     }
   }, [session, isPending]);
 
-  // 5. Delete Studio
+  // 5. Delete Studio With JWT
   const handleDelete = async () => {
+    if (!selectedStudio) return;
+
     try {
       setDeleting(true);
 
-      const result = await deleteStudio(
-        selectedStudio._id,
-        session.user.email
-      );
+      // Get JWT Token
+      const token = await getTokenFromClient();
+
+      if (!token) {
+        toast.error("Please login again");
+        router.push("/login");
+        return;
+      }
+
+      // Get Studio ID
+      const id = selectedStudio._id;
+
+      // Send ID and Token
+      const result = await deleteStudio(id, token);
 
       console.log("Delete Response:", result);
 
@@ -65,11 +88,9 @@ export default function MyListingsPage() {
         toast.success("Studio deleted successfully!");
 
         // Remove Studio From UI
-        const remainingStudios = studios.filter(
-          (studio) => studio._id !== selectedStudio._id
+        setStudios((previousStudios) =>
+          previousStudios.filter((studio) => studio._id !== id)
         );
-
-        setStudios(remainingStudios);
 
         setSelectedStudio(null);
       } else {
@@ -77,7 +98,7 @@ export default function MyListingsPage() {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Delete failed!");
+      toast.error(error.message || "Delete failed!");
     } finally {
       setDeleting(false);
     }
@@ -105,12 +126,10 @@ export default function MyListingsPage() {
   // 8. UI
   return (
     <main className="min-h-screen bg-base-200 py-10 px-4">
-
       <div className="max-w-6xl mx-auto">
 
         {/* Heading */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10">
-
           <div>
             <p className="text-primary font-semibold text-sm">
               HOST DASHBOARD
@@ -128,12 +147,10 @@ export default function MyListingsPage() {
           <Link href="/add-studio" className="btn btn-primary">
             + Add New Studio
           </Link>
-
         </div>
 
         {/* Total Studios */}
         <div className="bg-base-100 rounded-xl p-6 shadow-sm border border-base-300 mb-8">
-
           <p className="text-base-content/60">
             Total Studios
           </p>
@@ -141,17 +158,12 @@ export default function MyListingsPage() {
           <h2 className="text-3xl font-bold text-primary mt-2">
             {studios.length}
           </h2>
-
         </div>
 
         {/* Empty Data */}
         {studios.length === 0 && (
-
           <div className="bg-base-100 rounded-2xl p-10 text-center shadow-sm">
-
-            <div className="text-6xl mb-4">
-              🏢
-            </div>
+            <div className="text-6xl mb-4">🏢</div>
 
             <h2 className="text-2xl font-bold">
               No Studios Found
@@ -164,21 +176,16 @@ export default function MyListingsPage() {
             <Link href="/add-studio" className="btn btn-primary">
               Add Your First Studio
             </Link>
-
           </div>
-
         )}
 
         {/* Studio Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
           {studios.map((studio) => (
-
             <div
               key={studio._id}
               className="card bg-base-100 shadow-md border border-base-300 overflow-hidden"
             >
-
               {/* Image */}
               <figure className="h-52">
                 <img
@@ -209,7 +216,6 @@ export default function MyListingsPage() {
 
                 {/* Price */}
                 <div className="flex justify-between items-center border-y border-base-300 py-4 my-2">
-
                   <div>
                     <p className="text-xs text-base-content/50">
                       Hourly Rate
@@ -229,7 +235,6 @@ export default function MyListingsPage() {
                       {studio.maxCapacity} People
                     </h3>
                   </div>
-
                 </div>
 
                 {/* Overview */}
@@ -239,21 +244,15 @@ export default function MyListingsPage() {
 
                 {/* Amenities */}
                 <div className="flex flex-wrap gap-2 mt-3">
-
-                  {studio.amenities.map((amenity) => (
-                    <span
-                      key={amenity}
-                      className="badge badge-ghost"
-                    >
+                  {(studio.amenities || []).map((amenity) => (
+                    <span key={amenity} className="badge badge-ghost">
                       {amenity}
                     </span>
                   ))}
-
                 </div>
 
                 {/* Buttons */}
                 <div className="flex gap-3 mt-5">
-
                   <Link
                     href={`/studios/edit/${studio._id}`}
                     className="btn btn-outline btn-primary flex-1"
@@ -267,29 +266,20 @@ export default function MyListingsPage() {
                   >
                     Delete
                   </button>
-
                 </div>
 
               </div>
-
             </div>
-
           ))}
-
         </div>
-
       </div>
 
       {/* Delete Modal */}
       {selectedStudio && (
-
         <div className="fixed inset-0 bg-black/60 flex justify-center items-center p-4 z-50">
-
           <div className="bg-base-100 rounded-2xl p-7 max-w-md w-full shadow-xl text-center">
 
-            <div className="text-5xl mb-4">
-              🗑️
-            </div>
+            <div className="text-5xl mb-4">🗑️</div>
 
             <h2 className="text-2xl font-bold">
               Delete Studio?
@@ -305,7 +295,6 @@ export default function MyListingsPage() {
             </p>
 
             <div className="flex gap-3 mt-7">
-
               <button
                 onClick={() => setSelectedStudio(null)}
                 disabled={deleting}
@@ -321,15 +310,11 @@ export default function MyListingsPage() {
               >
                 {deleting ? "Deleting..." : "Yes, Delete"}
               </button>
-
             </div>
 
           </div>
-
         </div>
-
       )}
-
     </main>
   );
 }

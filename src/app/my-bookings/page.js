@@ -4,8 +4,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { authClient } from "@/lib/auth-client";
 import { getMyBookings, cancelBooking } from "@/lib/api";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
+
 import { toast } from "react-toastify";
 
 export default function MyBookingsPage() {
@@ -32,11 +35,23 @@ export default function MyBookingsPage() {
       try {
         setLoading(true);
 
-        const data = await getMyBookings(userEmail);
+        // Get JWT Token
+        const token = await getTokenFromClient();
+
+        if (!token) {
+          toast.error("Please login again!");
+          router.push("/login");
+          return;
+        }
+
+        // Get Bookings With JWT Token
+        const data = await getMyBookings(token);
 
         setBookings(data);
+
       } catch (error) {
-        toast.error("Failed to load bookings");
+        console.log("Load Bookings Error:", error);
+        toast.error(error.message || "Failed to load bookings");
       } finally {
         setLoading(false);
       }
@@ -50,8 +65,19 @@ export default function MyBookingsPage() {
     try {
       setCancelId(id);
 
-      await cancelBooking(id, userEmail);
+      // Get JWT Token
+      const token = await getTokenFromClient();
 
+      if (!token) {
+        toast.error("Please login again!");
+        router.push("/login");
+        return;
+      }
+
+      // Cancel Booking With JWT Token
+      await cancelBooking(id, token);
+
+      // Update UI
       setBookings((previousBookings) =>
         previousBookings.map((booking) =>
           booking._id === id
@@ -61,7 +87,9 @@ export default function MyBookingsPage() {
       );
 
       toast.success("Booking cancelled successfully");
+
     } catch (error) {
+      console.log("Cancel Booking Error:", error);
       toast.error(error.message || "Failed to cancel booking");
     } finally {
       setCancelId("");
@@ -104,6 +132,7 @@ export default function MyBookingsPage() {
     return styles[status] || "bg-gray-100 text-gray-700";
   };
 
+  // Loading
   if (isPending || loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -207,6 +236,7 @@ export default function MyBookingsPage() {
                         <p className="text-sm text-gray-500">
                           Booking Date
                         </p>
+
                         <p className="font-semibold text-gray-800">
                           {formatDate(booking.bookingDate)}
                         </p>
@@ -216,6 +246,7 @@ export default function MyBookingsPage() {
                         <p className="text-sm text-gray-500">
                           Booking Time
                         </p>
+
                         <p className="font-semibold text-gray-800">
                           {formatTime(booking.startTime)} -{" "}
                           {formatTime(booking.endTime)}
@@ -226,6 +257,7 @@ export default function MyBookingsPage() {
                         <p className="text-sm text-gray-500">
                           Total Hours
                         </p>
+
                         <p className="font-semibold text-gray-800">
                           {booking.totalHours} Hours
                         </p>
@@ -235,6 +267,7 @@ export default function MyBookingsPage() {
                         <p className="text-sm text-gray-500">
                           Hourly Rate
                         </p>
+
                         <p className="font-semibold text-gray-800">
                           ${booking.hourlyRate} / hour
                         </p>
@@ -244,6 +277,7 @@ export default function MyBookingsPage() {
                         <p className="text-sm text-gray-500">
                           Total Price
                         </p>
+
                         <p className="font-bold text-lg text-primary">
                           ${booking.totalPrice}
                         </p>
@@ -253,6 +287,7 @@ export default function MyBookingsPage() {
                         <p className="text-sm text-gray-500">
                           Security Deposit
                         </p>
+
                         <p className="font-semibold text-gray-800">
                           ${booking.securityDeposit}
                         </p>

@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { authClient } from "@/lib/auth-client";
 import { getSingleStudio, updateStudio } from "@/lib/api";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 import { toast } from "react-toastify";
 
@@ -32,7 +33,6 @@ export default function UpdateStudioPage() {
     const getStudioData = async () => {
       try {
         const result = await getSingleStudio(params.id);
-
         setStudio(result);
       } catch (error) {
         toast.error(error.message);
@@ -43,7 +43,6 @@ export default function UpdateStudioPage() {
 
     getStudioData();
   }, [session, isPending, params.id, router]);
-
 
   // 2. Update Studio
   const handleUpdateStudio = async (e) => {
@@ -66,23 +65,36 @@ export default function UpdateStudioPage() {
     try {
       setUpdating(true);
 
-      const result = await updateStudio(params.id, updatedStudio);
+      // Get JWT Token
+      const token = await getTokenFromClient();
+
+      if (!token) {
+        toast.error("Authentication token not found. Please login again!");
+        router.push("/login");
+        return;
+      }
+
+      // Send Update Data With JWT Token
+      const result = await updateStudio(
+        params.id,
+        updatedStudio,
+        token
+      );
 
       if (result.matchedCount > 0) {
         toast.success("Studio Updated Successfully!");
-
         router.push("/my-listings");
       } else {
-        toast.error("Studio not found!");
+        toast.error("Studio not found or you are not the owner!");
       }
 
     } catch (error) {
-      toast.error(error.message);
+      console.log("Update Studio Error:", error);
+      toast.error(error.message || "Failed to update studio");
     } finally {
       setUpdating(false);
     }
   };
-
 
   // 3. Loading
   if (isPending || loading) {
@@ -92,7 +104,6 @@ export default function UpdateStudioPage() {
       </div>
     );
   }
-
 
   // 4. Studio Not Found
   if (!studio) {
@@ -109,16 +120,13 @@ export default function UpdateStudioPage() {
     );
   }
 
-
   // 5. Update Form UI
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
-
       <div className="max-w-3xl mx-auto">
 
         {/* Header */}
         <div className="mb-8">
-
           <Link
             href="/my-listings"
             className="text-blue-600 font-medium"
@@ -133,9 +141,7 @@ export default function UpdateStudioPage() {
           <p className="text-gray-500 mt-2">
             Update your studio information.
           </p>
-
         </div>
-
 
         {/* Form */}
         <form
@@ -157,7 +163,6 @@ export default function UpdateStudioPage() {
               className="w-full border rounded-lg p-3"
             />
           </div>
-
 
           {/* Category */}
           <div>
@@ -183,7 +188,6 @@ export default function UpdateStudioPage() {
             </select>
           </div>
 
-
           {/* Hourly Rate */}
           <div>
             <label className="block font-medium mb-2">
@@ -198,7 +202,6 @@ export default function UpdateStudioPage() {
               className="w-full border rounded-lg p-3"
             />
           </div>
-
 
           {/* Security Deposit */}
           <div>
@@ -215,7 +218,6 @@ export default function UpdateStudioPage() {
             />
           </div>
 
-
           {/* Max Capacity */}
           <div>
             <label className="block font-medium mb-2">
@@ -230,7 +232,6 @@ export default function UpdateStudioPage() {
               className="w-full border rounded-lg p-3"
             />
           </div>
-
 
           {/* Location */}
           <div>
@@ -247,7 +248,6 @@ export default function UpdateStudioPage() {
             />
           </div>
 
-
           {/* Image */}
           <div>
             <label className="block font-medium mb-2">
@@ -262,7 +262,6 @@ export default function UpdateStudioPage() {
               className="w-full border rounded-lg p-3"
             />
           </div>
-
 
           {/* Amenities */}
           <div>
@@ -282,7 +281,6 @@ export default function UpdateStudioPage() {
               "Microphone",
               "Green Screen",
             ].map((amenity) => (
-
               <label
                 key={amenity}
                 className="flex items-center gap-3 mb-3"
@@ -296,13 +294,9 @@ export default function UpdateStudioPage() {
                 />
 
                 <span>{amenity}</span>
-
               </label>
-
             ))}
-
           </div>
-
 
           {/* Overview */}
           <div>
@@ -319,7 +313,6 @@ export default function UpdateStudioPage() {
             />
           </div>
 
-
           {/* Save Changes */}
           <button
             type="submit"
@@ -330,9 +323,7 @@ export default function UpdateStudioPage() {
           </button>
 
         </form>
-
       </div>
-
     </div>
   );
 }

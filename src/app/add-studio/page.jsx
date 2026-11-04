@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { addStudio } from "@/lib/api";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -43,6 +44,7 @@ export default function AddStudioPage() {
     setLoading(true);
 
     try {
+      // Get Form Data
       const formData = new FormData(e.target);
 
       // Selected Amenities
@@ -67,8 +69,17 @@ export default function AddStudioPage() {
 
       console.log("New Studio Data:", studioData);
 
-      // Send Data To Server
-      const save = await addStudio(studioData);
+      // Get JWT Token
+      const token = await getTokenFromClient();
+
+      if (!token) {
+        toast.error("Authentication token not found. Please login again!");
+        router.push("/login");
+        return;
+      }
+
+      // Send Data To Server with JWT
+      const save = await addStudio(studioData, token);
 
       console.log("Save Studio Response:", save);
 
@@ -361,7 +372,6 @@ export default function AddStudioPage() {
 
               {/* Submit Button */}
               <div className="mt-8">
-
                 <button
                   type="submit"
                   disabled={loading}
@@ -376,7 +386,6 @@ export default function AddStudioPage() {
                     "Add Studio"
                   )}
                 </button>
-
               </div>
 
             </form>

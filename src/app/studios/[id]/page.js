@@ -1,11 +1,35 @@
 
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { getSingleStudio } from "@/lib/api";
 import BookingButton from "@/components/studios/BookingButton";
 
 const StudioDetailsPage = async ({ params }) => {
+
   const { id } = await params;
 
-  const studio = await getSingleStudio(id);
+  // 1. Get request headers
+  const requestHeaders = await headers();
+
+  // 2. Get logged in user
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  const user = session?.user;
+
+  // 3. Get JWT token
+  const tokenData = await auth.api.getToken({
+    headers: requestHeaders,
+  });
+
+  const token = tokenData?.token;
+
+  console.log("Logged in user:", user);
+  console.log("JWT Token:", token);
+
+  // 4. Get Studio Details with token
+  const studio = await getSingleStudio(id, token);
 
   if (!studio) {
     return <h1>Studio Not Found</h1>;
@@ -13,6 +37,7 @@ const StudioDetailsPage = async ({ params }) => {
 
   return (
     <div className="container mx-auto px-4 py-10">
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
         {/* Studio Image */}
@@ -73,8 +98,11 @@ const StudioDetailsPage = async ({ params }) => {
             ))}
           </div>
 
-          {/* Booking */}
-          <BookingButton studio={studio} />
+          {/* Booking Modal Button */}
+          <BookingButton
+            studio={studio}
+            user={user}
+          />
 
         </div>
       </div>
