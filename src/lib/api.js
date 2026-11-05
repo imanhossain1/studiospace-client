@@ -1,24 +1,14 @@
-// Function	Token লাগবে?
-// getStudios()	না
-// getFeaturedStudios()	না
-// getSingleStudio()	না
-// getCategories()	না
-// getMyStudios(token)	হ্যাঁ
-// addStudio(data, token)	হ্যাঁ
-// updateStudio(id, data, token)	হ্যাঁ
-// deleteStudio(id, token)	হ্যাঁ
-// createBooking(data, token)	হ্যাঁ
-// getMyBookings(token)	হ্যাঁ
-// cancelBooking(id, token)	হ্যাঁ
 
-const apiStudioUrl = "http://localhost:8000/studios";
-const apiFeaturedStudioUrl = "http://localhost:8000/studios/featured";
-const apiCategoryUrl = "http://localhost:8000/categories";
-const apiBookingUrl = "http://localhost:8000/bookings";
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
+const apiStudioUrl = `${apiBaseUrl}/studios`;
+const apiFeaturedStudioUrl = `${apiStudioUrl}/featured`;
+const apiCategoryUrl = `${apiBaseUrl}/categories`;
+const apiBookingUrl = `${apiBaseUrl}/bookings`;
+const apiMyListingsUrl = `${apiBaseUrl}/my-listings`;
+const apiMyBookingsUrl = `${apiBaseUrl}/my-bookings`;
 
 // 1. Get All Studios or Category Wise Studios
-// Public API: JWT লাগবে না।
 export async function getStudios(category) {
   const url = category
     ? `${apiStudioUrl}?category=${encodeURIComponent(category)}`
@@ -30,9 +20,7 @@ export async function getStudios(category) {
   return data;
 }
 
-
 // 2. Get Featured Studios
-// Public API: JWT লাগবে না।
 export async function getFeaturedStudios() {
   const res = await fetch(apiFeaturedStudioUrl);
   const data = await res.json();
@@ -40,9 +28,7 @@ export async function getFeaturedStudios() {
   return data;
 }
 
-
 // 3. Get Single Studio
-// Public API: JWT লাগবে না।
 export async function getSingleStudio(id) {
   const res = await fetch(`${apiStudioUrl}/${id}`);
   const data = await res.json();
@@ -50,9 +36,7 @@ export async function getSingleStudio(id) {
   return data;
 }
 
-
 // 4. Get Categories
-// Public API: JWT লাগবে না।
 export async function getCategories() {
   const res = await fetch(apiCategoryUrl);
   const data = await res.json();
@@ -60,11 +44,9 @@ export async function getCategories() {
   return data;
 }
 
-
 // 5. Get My Studio Listings
-// Protected API: JWT লাগবে।
 export async function getMyStudios(token) {
-  const res = await fetch("http://localhost:8000/my-listings", {
+  const res = await fetch(apiMyListingsUrl, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -79,9 +61,7 @@ export async function getMyStudios(token) {
   return data;
 }
 
-
 // 6. Add New Studio
-// Protected API: JWT লাগবে।
 export async function addStudio(studioData, token) {
   const res = await fetch(apiStudioUrl, {
     method: "POST",
@@ -101,9 +81,7 @@ export async function addStudio(studioData, token) {
   return data;
 }
 
-
 // 7. Update Studio
-// Protected API: JWT লাগবে।
 export async function updateStudio(id, studioData, token) {
   const res = await fetch(`${apiStudioUrl}/${id}`, {
     method: "PATCH",
@@ -123,9 +101,7 @@ export async function updateStudio(id, studioData, token) {
   return data;
 }
 
-
 // 8. Delete Studio
-// Protected API: JWT লাগবে।
 export async function deleteStudio(id, token) {
   const res = await fetch(`${apiStudioUrl}/${id}`, {
     method: "DELETE",
@@ -143,9 +119,7 @@ export async function deleteStudio(id, token) {
   return data;
 }
 
-
 // 9. Create Booking
-// Protected API: JWT লাগবে।
 export async function createBooking(bookingData, token) {
   const res = await fetch(apiBookingUrl, {
     method: "POST",
@@ -165,11 +139,9 @@ export async function createBooking(bookingData, token) {
   return data;
 }
 
-
 // 10. Get My Bookings
-// Protected API: JWT লাগবে।
 export async function getMyBookings(token) {
-  const res = await fetch("http://localhost:8000/my-bookings", {
+  const res = await fetch(apiMyBookingsUrl, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -184,9 +156,7 @@ export async function getMyBookings(token) {
   return data;
 }
 
-
 // 11. Cancel Booking
-// Protected API: JWT লাগবে।
 export async function cancelBooking(id, token) {
   const res = await fetch(`${apiBookingUrl}/${id}`, {
     method: "PATCH",
@@ -203,4 +173,3 @@ export async function cancelBooking(id, token) {
 
   return data;
 }
-
