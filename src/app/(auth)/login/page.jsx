@@ -9,11 +9,13 @@ import { toast } from "react-toastify"
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
 
+  // Email Login
   const handleEmailLogin = async (e) => {
     e.preventDefault()
 
-    if (loading) return
+    if (loading || googleLoading) return
 
     const formData = new FormData(e.target)
     const user = Object.fromEntries(formData.entries())
@@ -34,7 +36,6 @@ export default function LoginPage() {
       if (data) {
         toast.success("Login successful!")
 
-        // Previous Route
         let redirectURL = "/"
 
         const callbackURL = new URLSearchParams(
@@ -47,18 +48,6 @@ export default function LoginPage() {
           !callbackURL.startsWith("//")
         ) {
           redirectURL = callbackURL
-        } else if (document.referrer) {
-          const previousPage = new URL(document.referrer)
-
-          if (
-            previousPage.origin === window.location.origin &&
-            previousPage.pathname !== "/login"
-          ) {
-            redirectURL =
-              previousPage.pathname +
-              previousPage.search +
-              previousPage.hash
-          }
         }
 
         window.location.href = redirectURL
@@ -71,8 +60,46 @@ export default function LoginPage() {
     }
   }
 
+  // Google Login
+  const handleGoogleLogin = async () => {
+    if (loading || googleLoading) return
+
+    try {
+      setGoogleLoading(true)
+
+      let redirectURL = "/"
+
+      const callbackURL = new URLSearchParams(
+        window.location.search
+      ).get("callbackURL")
+
+      if (
+        callbackURL &&
+        callbackURL.startsWith("/") &&
+        !callbackURL.startsWith("//")
+      ) {
+        redirectURL = callbackURL
+      }
+
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: redirectURL,
+      })
+
+      if (error) {
+        toast.error(error.message)
+        setGoogleLoading(false)
+      }
+
+    } catch (error) {
+      toast.error("Google login failed!")
+      setGoogleLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">
+
       <div className="card bg-base-100 shadow-xl w-full max-w-md">
         <div className="card-body">
 
@@ -84,62 +111,100 @@ export default function LoginPage() {
             Login to StudioSpace
           </p>
 
+          {/* Email Login Form */}
           <form onSubmit={handleEmailLogin}>
 
             {/* Email */}
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
+            <fieldset disabled={loading || googleLoading}>
 
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
 
-            {/* Password */}
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-
-              <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Enter password"
-                  className="input input-bordered w-full pr-12"
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  className="input input-bordered w-full"
                   required
                 />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </button>
               </div>
-            </div>
 
-            {/* Submit */}
+              {/* Password */}
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Password</span>
+                </label>
+
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter password"
+                    className="input input-bordered w-full pr-12"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    disabled={loading || googleLoading}
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+              </div>
+
+            </fieldset>
+
+            {/* Login Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || googleLoading}
               className="btn btn-primary w-full"
             >
-              {loading ? "Logging In..." : "Login"}
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Logging In...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
 
           </form>
 
           <div className="divider">OR</div>
 
-          <p className="text-center text-sm">
+          {/* Google Login */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading || loading}
+            className="btn btn-outline w-full"
+          >
+            {googleLoading ? (
+              <>
+                <span className="loading loading-spinner loading-sm"></span>
+                Connecting to Google...
+              </>
+            ) : (
+              <>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                Continue with Google
+              </>
+            )}
+          </button>
+
+          {/* Register Link */}
+          <p className="text-center text-sm mt-4">
             Don't have an account?{" "}
             <Link
               href="/register"
@@ -151,6 +216,7 @@ export default function LoginPage() {
 
         </div>
       </div>
+
     </div>
   )
 }

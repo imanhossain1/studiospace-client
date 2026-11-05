@@ -1,94 +1,132 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const slides = [
   {
     id: 1,
-    title: "Find Your Perfect Creative Space",
+    subtitle: "PHOTOGRAPHY & CREATIVE SPACES",
+    title: "Create Something Extraordinary",
     description:
-      "Discover professional studios for photography, filmmaking and creative projects.",
+      "Discover inspiring photography studios and creative spaces for your next project.",
     image:
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=2000&q=85",
   },
   {
     id: 2,
-    title: "Create Something Amazing",
+    subtitle: "MUSIC & RECORDING STUDIOS",
+    title: "Where Your Ideas Become Reality",
     description:
-      "Book beautiful spaces and bring your creative ideas to life.",
+      "Find professional recording studios and sound spaces to bring your music to life.",
     image:
-      "https://images.unsplash.com/photo-1492619375914-88005aa9e8fb",
+      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=2000&q=85",
   },
   {
     id: 3,
-    title: "Turn Your Space Into Income",
+    subtitle: "PODCAST & PRODUCTION SPACES",
+    title: "Your Space. Your Creativity.",
     description:
-      "List your studio and connect with creators looking for the perfect workspace.",
+      "Book unique creative workspaces and turn your vision into something amazing.",
     image:
-      "https://images.unsplash.com/photo-1497366811353-6870744d04b2",
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=2000&q=85",
   },
 ];
 
-const HeroSlider = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+export default function HeroSlider() {
+  const [activeSlide, setActiveSlide] = useState(0);
 
+  // Auto Slide
+  useEffect(() => {
+    const sliderInterval = setInterval(() => {
+      setActiveSlide((previousSlide) => {
+        return (previousSlide + 1) % slides.length;
+      });
+    }, 4000);
+
+    return () => clearInterval(sliderInterval);
+  }, []);
+
+  // Next Slide
   const nextSlide = () => {
-    setCurrentSlide((previous) =>
-      previous === slides.length - 1 ? 0 : previous + 1
-    );
+    setActiveSlide((activeSlide + 1) % slides.length);
   };
 
+  // Previous Slide
   const previousSlide = () => {
-    setCurrentSlide((previous) =>
-      previous === 0 ? slides.length - 1 : previous - 1
+    setActiveSlide(
+      (activeSlide - 1 + slides.length) % slides.length
     );
   };
-
-  const slide = slides[currentSlide];
 
   return (
-    <section className="px-4 py-6 lg:px-10">
-      <div
-        className="relative flex min-h-[420px] items-center overflow-hidden rounded-2xl bg-cover bg-center md:min-h-[500px]"
-        style={{
-          backgroundImage: `url(${slide.image})`,
-        }}
-      >
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/55"></div>
+    <section className="max-w-7xl mx-auto px-4 pt-6">
 
-        {/* Content */}
-        <div className="relative z-10 max-w-2xl px-6 py-12 text-white md:px-16">
+      <div className="relative overflow-hidden rounded-2xl h-[340px] md:h-[430px]">
 
-          <p className="mb-4 font-semibold uppercase tracking-widest text-primary-content">
-            Welcome to StudioSpace
-          </p>
+        {slides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              activeSlide === index
+                ? "opacity-100 z-10"
+                : "opacity-0 z-0"
+            }`}
+            style={{
+              backgroundImage: `url("${slide.image}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
 
-          <h1 className="mb-5 text-3xl font-bold md:text-5xl">
-            {slide.title}
-          </h1>
+            {/* Dark Overlay */}
+            <div className="absolute inset-0 bg-black/60"></div>
 
-          <p className="mb-7 text-base text-gray-200 md:text-lg">
-            {slide.description}
-          </p>
+            {/* Content */}
+            <div className="relative z-10 h-full flex items-center px-6 md:px-14">
 
-          <div className="flex flex-wrap gap-3">
-            <Link href="/studios" className="btn btn-primary">
-              Explore Studios
-            </Link>
+              <div className="max-w-2xl text-white">
 
-            <Link href="/studios" className="btn btn-outline text-white">
-              Host Your Space
-            </Link>
+                <p className="text-sm font-bold tracking-[3px] text-primary-content mb-4">
+                  {slide.subtitle}
+                </p>
+
+                <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
+                  {slide.title}
+                </h1>
+
+                <p className="mt-5 text-sm md:text-lg text-white/80 leading-7 max-w-xl">
+                  {slide.description}
+                </p>
+
+                <div className="flex flex-wrap gap-3 mt-7">
+
+                  <Link
+                    href="/studios"
+                    className="btn btn-primary"
+                  >
+                    Explore Studios →
+                  </Link>
+
+                  <Link
+                    href="/add-studio"
+                    className="btn btn-outline border-white text-white hover:bg-white hover:text-black"
+                  >
+                    Host Your Space
+                  </Link>
+
+                </div>
+
+              </div>
+            </div>
           </div>
-        </div>
+        ))}
 
         {/* Previous Button */}
         <button
           onClick={previousSlide}
-          className="absolute left-3 top-1/2 z-20 btn btn-circle btn-sm md:left-5 md:btn-md"
+          className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-20 btn btn-circle btn-sm md:btn-md bg-black/40 text-white border-none hover:bg-black/70"
           aria-label="Previous slide"
         >
           ❮
@@ -97,30 +135,29 @@ const HeroSlider = () => {
         {/* Next Button */}
         <button
           onClick={nextSlide}
-          className="absolute right-3 top-1/2 z-20 btn btn-circle btn-sm md:right-5 md:btn-md"
+          className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-20 btn btn-circle btn-sm md:btn-md bg-black/40 text-white border-none hover:bg-black/70"
           aria-label="Next slide"
         >
           ❯
         </button>
 
-        {/* Dots */}
-        <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-          {slides.map((item, index) => (
+        {/* Pagination Dots */}
+        <div className="absolute bottom-5 left-0 right-0 z-20 flex justify-center gap-2">
+          {slides.map((slide, index) => (
             <button
-              key={item.id}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-3 w-3 rounded-full ${
-                currentSlide === index
-                  ? "bg-primary"
-                  : "bg-white/60"
+              key={slide.id}
+              onClick={() => setActiveSlide(index)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                activeSlide === index
+                  ? "w-8 bg-white"
+                  : "w-2 bg-white/50"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
+
       </div>
     </section>
   );
-};
-
-export default HeroSlider;
+}

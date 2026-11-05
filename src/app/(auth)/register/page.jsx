@@ -10,22 +10,22 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
 
+  // Email Registration
   const handleEmailRegister = async (e) => {
     e.preventDefault()
 
-    if (loading) return
+    if (loading || googleLoading) return
 
     const formData = new FormData(e.target)
     const user = Object.fromEntries(formData.entries())
 
-    // Confirm Password
     if (user.password !== user.confirmPassword) {
       toast.error("Password does not match")
       return
     }
 
-    // Password Validation
     if (
       !/[A-Z]/.test(user.password) ||
       !/[a-z]/.test(user.password) ||
@@ -55,14 +55,64 @@ export default function RegisterPage() {
       if (data) {
         toast.success("Registration successful!")
 
-        // Go to Login Page
-        window.location.href = "/login"
+        let redirectURL = "/"
+
+        const callbackURL = new URLSearchParams(
+          window.location.search
+        ).get("callbackURL")
+
+        if (
+          callbackURL &&
+          callbackURL.startsWith("/") &&
+          !callbackURL.startsWith("//")
+        ) {
+          redirectURL = callbackURL
+        }
+
+        window.location.href = redirectURL
       }
 
     } catch (error) {
       toast.error("Something went wrong!")
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Google Registration / Login
+  const handleGoogleLogin = async () => {
+    if (googleLoading || loading) return
+
+    try {
+      setGoogleLoading(true)
+
+      let redirectURL = "/"
+
+      const callbackURL = new URLSearchParams(
+        window.location.search
+      ).get("callbackURL")
+
+      if (
+        callbackURL &&
+        callbackURL.startsWith("/") &&
+        !callbackURL.startsWith("//")
+      ) {
+        redirectURL = callbackURL
+      }
+
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: redirectURL,
+      })
+
+      if (error) {
+        toast.error(error.message)
+        setGoogleLoading(false)
+      }
+
+    } catch (error) {
+      toast.error("Google login failed!")
+      setGoogleLoading(false)
     }
   }
 
@@ -178,10 +228,10 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Submit */}
+            {/* Email Register Button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || googleLoading}
               className="btn btn-primary w-full"
             >
               {loading ? "Creating Account..." : "Register"}
@@ -191,7 +241,28 @@ export default function RegisterPage() {
 
           <div className="divider">OR</div>
 
-          <p className="text-center text-sm">
+          {/* Google Button */}
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading || loading}
+            className="btn btn-outline w-full"
+          >
+            {googleLoading ? (
+              "Connecting to Google..."
+            ) : (
+              <>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                Continue with Google
+              </>
+            )}
+          </button>
+
+          <p className="text-center text-sm mt-4">
             Already have an account?{" "}
             <Link
               href="/login"
