@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎬 StudioSpace
+### Peer-to-Peer Creative Workspace & Production Studio Sharing Platform
 
-## Getting Started
+StudioSpace is a peer-to-peer marketplace where creators, photographers, filmmakers, podcasters, and musicians can discover, explore, and book creative studios.
 
-First, run the development server:
+## 🌐 Live Website
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+https://studiospace-frontend-vert.vercel.app/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔗 GitHub Repositories
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- **Client:** https://github.com/imanhossain1/studiospace-client
+- **Server:** https://github.com/imanhossain1/studiospace-server
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Main Features
 
-## Learn More
+- User registration and login with Better Auth and Google authentication.
+- Explore creative studios with category filtering.
+- Dynamic featured studios on the homepage.
+- View detailed studio information, pricing, location, and amenities.
+- Add, update, and delete studio listings.
+- Private routes for studio owners and authenticated users.
+- Booking system with Pending, Confirmed, Completed, and Cancelled statuses.
+- Manage personal studio listings and bookings.
+- JWT-secured API requests.
+- Responsive design with Light/Dark theme customization.
+- Custom loading states, empty states, modals, and toast notifications.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Technology Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend:** Next.js, React.js, JavaScript, Tailwind CSS, DaisyUI
+- **Authentication:** Better Auth
+- **Backend:** Node.js, Express.js
+- **Database:** MongoDB
+- **Security:** JWT, JOSE
+- **Deployment:** Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Local Setup
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Clone the Client and Server repositories.
+- Install dependencies using `npm install`.
+- Configure the required environment variables.
+- Start the backend server and frontend development server.
